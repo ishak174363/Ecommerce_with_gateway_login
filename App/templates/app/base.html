@@ -17,72 +17,77 @@
     {% comment %} Navbar Code {% endcomment %}
       <nav class="navbar navbar-expand-lg navbar-dark bg-success">
           <div class="container-fluid">
-              <a class="navbar-brand" href="/">
-                <img src="{% static 'app/images/Neel.png'%}" width="70" height="50" alt="">
-              </a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+               <a class="navbar-brand" href="/">
+                  <img src="{% static 'app/images/Neel.png'%}" width="70" height="50" alt="">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                       <span class="navbar-toggler-icon"></span>
-              </button>
+                </button>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                {% if request.user.is_authenticated %}
-                  <li class="nav-item">
-                      <a class="nav-link active" aria-current="page" href="/">Home</a>
-                  </li>
-                  <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Products
-                      </a>
-                      <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="{% url 'category' 'ML'%}">Milk</a></li>
-                          <li><a class="dropdown-item" href="{% url 'category' 'CR'%}">Curd</a></li>
-                          <li><a class="dropdown-item" href="{% url 'category' 'MS'%}">Milk Shake</a></li>
-                          <li><a class="dropdown-item" href="{% url 'category' 'LS'%}">Lassi</a></li>
-                          <li><a class="dropdown-item" href="{% url 'category' 'GH'%}">Ghee</a></li>
-                          <li><a class="dropdown-item" href="{% url 'category' 'PA'%}">Ponir</a></li>
-                          <li><a class="dropdown-item" href="{% url 'category' 'IC'%}">Ice Cream</a></li>
-                          <li><a class="dropdown-item" href="{% url 'category' 'CH'%}">Chesse</a></li>
-                        </ul>
-                   </li>
-                   <li class="nav-item">
-                      <a class="nav-link text-white" href="{% url 'about'%}">About Us</a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link text-white" href="{% url 'contact'%}">Contact Us</a>
-                  </li>
-              </ul>
-              <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
-            </div>
-
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item dropdown mx-2">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Sourav Biswas</a>
-                    <ul class="dropdown-menu" aria-labelledby="ProfileDropdown">
-                        <li><a class="dropdown-item" href="{%url 'profile'%}">Profile</a></li>
-                        <li><a class="dropdown-item" href="#">Orders</a></li>
-                        <li><a class="dropdown-item" href="{% url 'passwordchange'%}">Change Password</a></li>
-                        {% comment %} <li><a class="dropdown-item" href="{% url 'logout'%}">Logout</a></li> {% endcomment %}
-                        <form action="{% url 'logout' %}" method="post" class="d-inline">
-                          {% csrf_token %}
-                          <button type="submit" class="nav-link text-black btn btn-link">Logout</button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                      {% if request.user.is_authenticated %}
+                         <li class="nav-item">
+                          <a class="nav-link active" aria-current="page" href="/">Home</a>
+                        </li>
+                      <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Products
+                          </a>
+                          <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="{% url 'category' 'ML'%}">Milk</a></li>
+                              <li><a class="dropdown-item" href="{% url 'category' 'CR'%}">Curd</a></li>
+                              <li><a class="dropdown-item" href="{% url 'category' 'MS'%}">Milk Shake</a></li>
+                              <li><a class="dropdown-item" href="{% url 'category' 'LS'%}">Lassi</a></li>
+                              <li><a class="dropdown-item" href="{% url 'category' 'GH'%}">Ghee</a></li>
+                              <li><a class="dropdown-item" href="{% url 'category' 'PA'%}">Ponir</a></li>
+                              <li><a class="dropdown-item" href="{% url 'category' 'IC'%}">Ice Cream</a></li>
+                              <li><a class="dropdown-item" href="{% url 'category' 'CH'%}">Chesse</a></li>
+                           </ul>
+                       </li>
+                       <li class="nav-item">
+                          <a class="nav-link text-white" href="{% url 'about'%}">About Us</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'contact'%}">Contact Us</a>
+                          </li>
+                      </ul>
+                      <form class="d-flex" role="search">
+                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                            <button class="btn btn-outline-success" type="submit">Search</button>
                         </form>
-                    </ul>
-                  </li>
-                  <li class="nav-item mx-2">
-                      <a href= "{% url 'showcart'%}" class="nav-link text-white">
-                      Cart 4</a>
-                    </li>
-                  <li class="nav-item mx-2">
-                      <a href= "#" class="nav-link text-white">
-                      Wishlist 4</a>
-                    </li>
+                 </div>
 
-                    {% else %}
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item dropdown mx-2">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              {{request.user}}</a>
+                              <ul class="dropdown-menu" aria-labelledby="ProfileDropdown">
+                                  <li><a class="dropdown-item" href="{%url 'profile'%}">Profile</a></li>
+                                  <li><a class="dropdown-item" href="{% url 'orders' %}">Orders</a></li>
+                                  <li><a class="dropdown-item" href="{% url 'passwordchange'%}">Change Password</a></li>
+                                  {% comment %} <li><a class="dropdown-item" href="{% url 'logout'%}">Logout</a></li> {% endcomment %}
+                                  <li>
+                                    <form action="{% url 'logout' %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="nav-link text-black btn btn-link">Logout</button>
+                                    </form>
+                                  </li>
+                                </ul>
+                            </li>
+
+                          <li class="nav-item mx-2">
+                              <a href= "{% url 'showcart'%}" class="nav-link text-white">
+                              <span class="badg bg-danger">{% if totalitem > 0 %}{{totalitem}}{%endif%}</span>  Cart</a>
+                           </li>
+
+                          <li class="nav-item mx-2">
+                              <a href= "#" class="nav-link text-white">
+                              <span class="badg bg-danger">{% if wishlist > 0 %}{{wishlist}}{%endif%}</span>
+                              <i class="fa fa-heart"></i>  Wishlist</a>
+                            </li>
+
+            {% else %}
 
                   <li class="nav-item mx-2">
                       <a href= "{%url 'login' %}" class="nav-link text-white">

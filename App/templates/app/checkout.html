@@ -62,9 +62,9 @@
 {% block payment-gateway %}
         <script>
         var options = {
-            "key": "rzp_test_2TUHCJnGDCobwu", // Enter the Key ID generated from the Dashboard
-            "amount": "{{totaamount}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-            "currency": "INR",
+            "key": "rzp_test_LxRqAytASm1RfA", // Enter the Key ID generated from the Dashboard
+            "amount": "{{razoramount}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "currency": "TK",
             "name": "Dairy Milk Compant LTD.",
             "description": "Purchase Product",
             "order_id": "{{order_id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
@@ -82,17 +82,12 @@
         };
         var rzp1 = new Razorpay(options);
         rzp1.on('payment.failed', function (response){
-                alert(response.error.code);
                 alert(response.error.description);
-                alert(response.error.source);
-                alert(response.error.step);
-                alert(response.error.reason);
-                alert(response.error.metadata.order_id);
-                alert(response.error.metadata.payment_id);
         });
         document.getElementById('rzp-button1').onclick = function(e){
-            rzp1.open();
-            e.preventDefault();
+            console.log(" button click");
+                rzp1.open();
+                e.preventDefault();
         }
         </script> 
     

@@ -1,5 +1,6 @@
 from django.urls import path
 from App import views
+from .views import ProductDetail,CategoryView,CategoryTitle,ProfileView,UpdateAddress,checkout
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
@@ -21,10 +22,17 @@ urlpatterns = [
     path('add-to-cart/',views.add_to_cart,name='add-to-cart'),
     path('showcart/',views.showcart,name='showcart'),
     path('checkout/',views.checkout.as_view(),name='checkout'),
+    path('paymentdone/',views.payment_done,name='paymentdone'),
+    path('orders/',views.home,name='orders'),
 
     path('pluscart/',views.plus_cart),
     path('minuscart/',views.minus_cart),
     path('removecart/',views.remove_cart),
+    
+    #wishlist
+    path('pluswishlist/',views.plus_wishlist),
+    path('minuswishlist/',views.minus_wishlist),
+
     
 
     #login and registration

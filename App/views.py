@@ -2,11 +2,13 @@ from django.shortcuts import render,redirect
 from django.views import View
 from urllib import request
 from django.db.models import Count
-from .models import Product, Customer, Cart
+from .models import Product, Customer, Cart, Payment, OrderPlaced,Wishlist
 from .forms import CustomRegistrationForm, CustomerProfileForm
 from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import Q
+from django.conf import settings
+import razorpay
 
 # Create your views here.
 
@@ -14,31 +16,65 @@ def home(request):
     return render(request, 'app/home.html')
 
 def about(request):
-    return render(request, 'app/about.html')
+    totalitem=0
+    wishlist=0
+    if request.user.is_authenticated:
+        totalitem=len(Cart.objects.filter(user=request.user))
+        wishlist = len(Wishlist.objects.filter(user=request.user))
+    return render(request, 'app/about.html',locals())
 
 def contact(request):
-    return render(request, 'app/contact.html')
+    totalitem=0
+    wishlist=0
+    if request.user.is_authenticated:
+        totalitem=len(Cart.objects.filter(user=request.user))
+        wishlist=len(Wishlist.objects.filter(user=request.user))
+    return render(request, 'app/contact.html',locals())
 
 class CategoryView(View):
     def get(self, request,val):
+        totalitem=0
+        wishlist=0
+        if request.user.is_authenticated:
+            totalitem=len(Cart.objects.filter( user=request.user))
+            wishlist=len(Wishlist.objects.filter(user=request.user))
         product=Product.objects.filter(category=val)
         title=Product.objects.filter(category=val).values('title')
         return render(request,'app/category.html',locals())
 
 class CategoryTitle(View):
     def get(self, request,val):
+        totalitem=0
+        wishlist=0
+        if request.user.is_authenticated:
+            totalitem=len(Cart.objects.filter(user=request.user))
+            wishlist=len(Wishlist.objects.filter(user=request.user))
         product=Product.objects.filter(title=val)
         title=Product.objects.filter(category=product[0].category).values('title')
         return render(request,'app/category.html',locals())
 
+#product detail
 class ProductDetail(View):
     def get(self, request,pk):
-        product=Product.objects.get(id=pk)
+        product=Product.objects.get(pk=pk)
+        wishlist=Wishlist.objects.filter(Q(product=product) & Q(user=request.user))
+
+        totalitem=0
+        wishlist=0
+        if request.user.is_authenticated:
+            totalitem=len(Cart.objects.filter(user=request.user))
+            wishlist=len(Wishlist.objects.filter(user=request.user))
+        
         return render(request,'app/productdetail.html',locals())   
 
 
 class CustomerRegistrationView(View):
     def get(self, request):
+        totalitem=0
+        wishlist=0
+        if request.user.is_authenticated:
+            totalitem=len(Cart.objects.filter(user=request.user))
+            wishlist=len(Wishlist.objects.filter(user=request.user))
         form=CustomRegistrationForm()
         return render(request, 'app/customerregistration.html',locals())
     def post(self, request):
@@ -52,6 +88,11 @@ class CustomerRegistrationView(View):
 
 class ProfileView(View):
     def get(self, request):
+        totalitem=0
+        wishlist=0
+        if request.user.is_authenticated:
+            totalitem=len(Cart.objects.filter(user=request.user))
+            wishlist=len(Wishlist.objects.filter(user=request.user))
         form=CustomerProfileForm()
         return render(request, 'app/profile.html',locals())
     def post(self, request):
@@ -75,11 +116,21 @@ class ProfileView(View):
 
 
 def address(request):
+    totalitem=0
+    wishlist=0
+    if request.user.is_authenticated:
+        totalitem=len(Cart.objects.filter(user=request.user))
+        wishlist=len(Wishlist.objects.filter(user=request.user))
     add=Customer.objects.filter(user=request.user)
     return render(request, 'app/address.html',locals())
 
 class UpdateAddress(View):
     def get(self,request,pk):
+        totalitem=0
+        wishlist=0
+        if request.user.is_authenticated:
+            totalitem=len(Cart.objects.filter(user=request.user))
+            wishlist=len(Wishlist.objects.filter(user=request.user))
         add=Customer.objects.get(pk=pk)
         form=CustomerProfileForm(instance=add)
         return render(request,'app/updateaddress.html',locals())
@@ -103,6 +154,11 @@ class UpdateAddress(View):
 #checkout
 class checkout(View):
     def get(self,request):
+        totalitem=0
+        wishlist=0
+        if request.user.is_authenticated:
+            totalitem=len(Cart.objects.filter(user=request.user))
+            wishlist=len(Wishlist.objects.filter(user=request.user))
         user=request.user
         add=Customer.objects.filter(user=user)
         cart_items=Cart.objects.filter(user=user)
@@ -111,7 +167,46 @@ class checkout(View):
             value=p.quantity * p.product.discounted_price
             famount+=value
         totalamount=famount+50
+        razoramount=int(totalamount*100)
+        client=razorpay.Client(auth=(settings.RAZOR_KEY_ID,settings.RAZOR_KEY_SECRET))
+        data={'amount':razoramount,'currency':'TK','receipt':'order_rcptid_11'}
+        payment_response=client.order.create(data=data)
+        print(payment_response)
+
+        order_id=payment_response['id']
+        order_status=payment_response['status']
+        if order_status=='created':
+            payment=Payment(
+            user=user,
+            amount=totalamount,
+            razorpay_order_id=order_id,
+            razor_payment_status=order_status
+            )
+            payment.save()
         return render(request, 'app/checkout.html',locals())
+
+#payment done
+def payment_done(request):
+    order_id=request.GET.get('order_id')
+    payment_id=request.GET.get('payment_id')
+    cust_id=request.GET.get('cust_id')
+    user=request.user
+    customer=Customer.objects.get(user=user)
+    payment=Payment.objects.get(razorpay_order_id=order_id)
+    payment.paid=True
+    payment.razorpay_payment_id=payment_id
+    payment.save()
+    
+    cart=Cart.objects.filter(user=user)
+    for c in cart:
+        OrderPlaced(user=user,customer=customer,product=c.product,quantity=c.quantity,payment=payment).save()
+        c.delete()
+    return redirect('orders')
+
+#orders
+def orders(request):
+    order_placed=OrderPlaced.objects.filter(user=request.user)
+    return render(request, 'app/orders.html',locals())
 
 
 #add to cart
@@ -125,6 +220,11 @@ def add_to_cart(request):
 
 #show cart
 def showcart(request):
+    totalitem=0
+    wishlist=0
+    if request.user.is_authenticated:
+        totalitem=len(Cart.objects.filter(user=request.user))
+        wishlist=len(Wishlist.objects.filter(user=request.user))
     user=request.user
     cart=Cart.objects.filter(user=user)
     amount=0
@@ -205,3 +305,29 @@ def remove_cart(request):
             return JsonResponse(data)
         else:
             return JsonResponse({'error': 'Cart item not found'})
+
+
+#plus wishlist
+def plus_wishlist(request):
+    if request.method == 'GET':
+        prod_id = request.GET.get('prod_id')
+        product = Product.objects.get(id=prod_id)
+        user = request.user
+        Wishlist(user=user, product=product).save()
+        data = {
+            'message': 'Added to wishlist'
+        }
+        return JsonResponse(data)
+
+#minus wishlist
+def minus_wishlist(request):
+    if request.method == 'GET':
+        prod_id = request.GET.get('prod_id')
+        product = Product.objects.get(id=prod_id)
+        user = request.user
+        Wishlist.objects.filter(user=user, product=product).delete()
+        data = {
+            'message': 'Removed from wishlist'
+        }
+        return JsonResponse(data)
+ 

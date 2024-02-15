@@ -53,3 +53,44 @@ $('.remove-cart').click(function(){
         }
     })
 })
+
+
+//plus wishlist
+$('.plus-wishlist').click(function(){
+    var id = $(this).attr("pid").toString();
+    $.ajax({
+        type: "GET",
+        url: "/pluswishlist/",
+        data: {
+            prod_id: id
+        },
+        success: function(data){
+            if (data.message === 'Added to wishlist') {
+                alert("Added to wishlist");
+                // Handle redirection or UI update as needed
+            } else {
+                alert("Failed to add to wishlist");
+            }
+        }
+    })
+});
+
+//minus wishlist
+$('.minus-wishlist').click(function(){
+    var id = $(this).attr("pid").toString();
+    $.ajax({
+        type: "GET",
+        url: "/minuswishlist/",
+        data: {
+            prod_id: id
+        },
+        success: function(data){
+            if (data.message === 'Removed from wishlist') {
+                alert("Removed from wishlist");
+                // Handle redirection or UI update as needed
+            } else {
+                alert("Failed to remove from wishlist");
+            }
+        }
+    })
+});
