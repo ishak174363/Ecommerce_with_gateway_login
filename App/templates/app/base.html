@@ -52,9 +52,9 @@
                             <a class="nav-link text-white" href="{% url 'contact'%}">Contact Us</a>
                           </li>
                       </ul>
-                      <form class="d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                            <button class="btn btn-outline-success" type="submit">Search</button>
+                      <form class="d-flex" role="search" action="/search">
+                            <input class="form-control me-2" type="search" placeholder="Search" name="search" aria-label="Search">
+                            <button class="btn btn-outline-dark" type="submit">Search</button>
                         </form>
                  </div>
 
@@ -82,7 +82,7 @@
                            </li>
 
                           <li class="nav-item mx-2">
-                              <a href= "#" class="nav-link text-white">
+                              <a href= "{% url 'wishlist'%}" class="nav-link text-white">
                               <span class="badg bg-danger">{% if wishlist > 0 %}{{wishlist}}{%endif%}</span>
                               <i class="fa fa-heart"></i>  Wishlist</a>
                             </li>

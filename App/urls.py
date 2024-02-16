@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib import admin
 from App import views
 from .views import ProductDetail,CategoryView,CategoryTitle,ProfileView,UpdateAddress,checkout
 from django.conf import settings
@@ -30,10 +31,12 @@ urlpatterns = [
     path('removecart/',views.remove_cart),
     
     #wishlist
+    path('wishlist/',views.show_wishlist,name='wishlist'),
     path('pluswishlist/',views.plus_wishlist),
     path('minuswishlist/',views.minus_wishlist),
 
-    
+    #search 
+    path('search/',views.search,name='search'),
 
     #login and registration
     path('registration/',views.CustomerRegistrationView.as_view(),name='customerregistration'),
@@ -51,3 +54,6 @@ urlpatterns = [
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)     
 
+admin.site.site_header = "Ecommerce Admin"
+admin.site.site_title = "Ecommerce Admin Portal"
+admin.site.index_title = "Welcome to Ecommerce Researcher Portal"
